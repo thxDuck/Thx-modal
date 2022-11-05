@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import CloseButton from "./CloseButton.jsx";
-import useModal from "./Hooks.jsx";
-import * as scripts from "../scripts/scripts.jsx";
+import CloseButton from "./CloseButton";
+import useModal from "./Hooks";
+import * as scripts from "../scripts/scripts";
 import ERRORS from "../scripts/errors";
 import "../styles/animations.css";
 const Modal = props => {

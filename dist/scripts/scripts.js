@@ -1,3 +1,4 @@
+import React from "react";
 import { generateColorTheme } from "./colors.js";
 import * as styles from "./style";
 export const getAnimationOnClose = animation => {
