@@ -17,9 +17,7 @@ const Modal = props => {
     whenRender,
     onClose,
     exitOnEscape,
-    exitExisting
-  } = props;
-  const {
+    exitExisting,
     children,
     title,
     header,
@@ -147,8 +145,10 @@ const Modal = props => {
   }, getModal()));
 };
 const colorProp = (props, propName) => {
-  const regexp = /#[a-z0-9]{7}/;
-  if (props[propName].length !== 7 || regexp.test(props[propName])) return new Error(ERRORS.PROPS.INVALID_COLOR);
+  if (props[propName]) {
+    const regexp = /#[a-z0-9]{7}/;
+    if (props[propName].length !== 7 || regexp.test(props[propName])) return new Error(ERRORS.PROPS.INVALID_COLOR);
+  }
 };
 const animations = {
   open: ["slide-up", "slide-down", "slide-left", "slide-right", "fade-in", "scale-up"],

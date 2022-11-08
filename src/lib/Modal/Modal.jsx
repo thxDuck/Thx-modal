@@ -19,8 +19,6 @@ const Modal = (props) => {
 		onClose,
 		exitOnEscape,
 		exitExisting,
-	} = props;
-	const {
 		children,
 		title,
 		header,
@@ -90,8 +88,9 @@ const Modal = (props) => {
 
 	let closeButton = "";
 	if (closeBtn !== false || !!closeText) {
-		if (closeBtn !== undefined) closeButton = <CloseButton close={close}>{closeBtn}</CloseButton>;
-		else closeButton = <CloseButton text={closeText}  close={close} />;
+		if (closeBtn !== undefined)
+			closeButton = <CloseButton close={close}>{closeBtn}</CloseButton>;
+		else closeButton = <CloseButton text={closeText} close={close} />;
 	}
 
 	// Styles
@@ -124,7 +123,7 @@ const Modal = (props) => {
 		if (!!index) {
 			modStyle.zIndex = `${index}`;
 		}
-		const head = scripts.getHeadContent(title, closeButton)
+		const head = scripts.getHeadContent(title, closeButton);
 		return (
 			<div
 				id={id}
@@ -159,9 +158,11 @@ const Modal = (props) => {
 	);
 };
 const colorProp = (props, propName) => {
-	const regexp = /#[a-z0-9]{7}/;
-	if (props[propName].length !== 7 || regexp.test(props[propName]))
-		return new Error(ERRORS.PROPS.INVALID_COLOR);
+	if (props[propName]) {
+		const regexp = /#[a-z0-9]{7}/;
+		if (props[propName].length !== 7 || regexp.test(props[propName]))
+			return new Error(ERRORS.PROPS.INVALID_COLOR);
+	}
 };
 const animations = {
 	open: ["slide-up", "slide-down", "slide-left", "slide-right", "fade-in", "scale-up"],

@@ -10,6 +10,7 @@ A React modal created for developers, with easy configuration and styling.
 -   [Minimal exepmple](#minimal-exepmple)
 -   [Examples](#examples)
 -   [Demos](#demos)
+-   [Dependencies](#dependencies)
 
 ## Installation
 
@@ -114,3 +115,11 @@ You must have at least one of `content` or `children` props or anything in child
 | ------------ | -------- | ----------------------------------------------------------------------- |
 | asyncContent | Function | Asynchronous content will replace content already in place in the modal |
 | whenRender   | Function | Function called when the modal is closing                               |
+
+
+
+## Dependencies
+
+- "prop-types": "^15.8.1"
+- "react": "^18.2.0",
+- "react-dom": "^18.2.0"

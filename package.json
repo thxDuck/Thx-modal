@@ -1,6 +1,6 @@
 {
 	"name": "thx-modal",
-	"version": "0.0.103",
+	"version": "0.1.0",
 	"dependencies": {
 		"prop-types": "^15.8.1"
 	},
