@@ -62,7 +62,8 @@ export let modal = {
   "backgroundColor": "#fff",
   "borderRadius": "5px",
   "boxShadow": "0px 0px 10px rgba(0, 0, 0, 0.5)",
-  "top": "10%"
+  "top": "10%",
+  "color": "black"
 };
 export const background = {
   "display": "flex",
@@ -73,5 +74,6 @@ export const background = {
   "left": "0",
   "width": "100%",
   "height": "100%",
-  "backgroundColor": "rgba(0, 0, 0, 0.5)"
+  "backgroundColor": "rgba(0, 0, 0, 0.5)",
+  "zIndex": 1
 };

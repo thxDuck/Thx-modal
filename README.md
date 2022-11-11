@@ -21,7 +21,7 @@ To install, you can use [npm](https://npmjs.org/) or [yarn](https://yarnpkg.com)
     $ yarn add thx-modal
 ```
 
-## Minimal exepmple
+## Minimal exemple
 
 Here is a simple example of thx-modal being used in an app with some custom
 styles and focusable input elements within the modal content:

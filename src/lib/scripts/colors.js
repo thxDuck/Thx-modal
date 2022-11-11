@@ -1,5 +1,5 @@
 export const generateColorTheme = (baseColor) => {
-	const regexp = /#[a-z0-9]{6}/;
+	const regexp = /#[a-zA-Z0-9]{6}/;
 	if (baseColor.length === 7 && regexp.test(baseColor)) {
 		const base = baseColor;
 		const dark = colorLighter(base, -100);

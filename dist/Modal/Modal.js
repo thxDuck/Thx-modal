@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import CloseButton from "./CloseButton";
 import useModal from "./Hooks";
@@ -31,6 +32,17 @@ const Modal = props => {
   const {
     toggleModal
   } = useModal();
+  const portalId = `__thxModals_portal__${id}`;
+  if (!document.getElementById(portalId)) {
+    const portalContainer = document.createElement("div");
+    portalContainer.id = portalId;
+    if (props.backgroundStyle !== false) {
+      portalContainer.style.position = "absolute";
+      portalContainer.style.top = "0";
+      portalContainer.style.left = "0";
+    }
+    document.getElementsByTagName("body")[0].prepend(portalContainer);
+  }
   const {
     closeBtn,
     closeText
@@ -43,6 +55,7 @@ const Modal = props => {
     if (!!event.target.className.includes("bg-modal")) close();
   };
   useEffect(() => {
+    if (!isOpen) return;
     const getAsyncContent = async () => {
       const content = await asyncContent();
       setContent(content);
@@ -63,11 +76,8 @@ const Modal = props => {
       if (exitOnEscape !== false) window.removeEventListener("keydown", handleKeyPress);
       if (exitOnClick) window.removeEventListener("click", handleClick);
     };
-  }, [isOpen, exitOnEscape]);
-  if (!children && !header && !content && !footer) {
-    console.error(ERRORS.CONTENT.NO_CONTENT);
-    return false;
-  }
+  }, [realContent, isOpen, exitOnEscape]);
+
   // Close
   const close = () => {
     const duration = parseInt(animationDuration) || 0;
@@ -79,22 +89,12 @@ const Modal = props => {
       });
     }
     setTimeout(() => {
-      if (!!onClose) onClose();
       window.removeEventListener("keydown", handleKeyPress);
       window.removeEventListener("click", handleClick);
-      toggleModal(id);
       onClose(id);
+      toggleModal(id);
     }, duration);
   };
-  let closeButton = "";
-  if (closeBtn !== false || !!closeText) {
-    if (closeBtn !== undefined) closeButton = /*#__PURE__*/React.createElement(CloseButton, {
-      close: close
-    }, closeBtn);else closeButton = /*#__PURE__*/React.createElement(CloseButton, {
-      text: closeText,
-      close: close
-    });
-  }
 
   // Styles
   let {
@@ -115,6 +115,17 @@ const Modal = props => {
     bgStyle,
     modStyle
   } = scripts.generateStyles(theme, textColor, modalStyle, backgroundStyle, modalSize);
+  let closeButton = "";
+  if (closeBtn !== false || !!closeText) {
+    if (closeBtn !== undefined) closeButton = /*#__PURE__*/React.createElement(CloseButton, {
+      textColor: modStyle.color,
+      close: close
+    }, closeBtn);else closeButton = /*#__PURE__*/React.createElement(CloseButton, {
+      textColor: modStyle.color,
+      text: closeText,
+      close: close
+    });
+  }
   const {
     animationOpen
   } = props;
@@ -139,15 +150,15 @@ const Modal = props => {
       style: footerStyle
     }, footer)));
   };
-  return isOpen && (backgroundStyle === false ? getModal() : /*#__PURE__*/React.createElement("div", {
+  return isOpen && /*#__PURE__*/ReactDOM.createPortal(backgroundStyle === false ? getModal() : /*#__PURE__*/React.createElement("div", {
     className: "bg-modal",
     style: bgStyle
-  }, getModal()));
+  }, getModal()), document.getElementById(portalId));
 };
 const colorProp = (props, propName) => {
   if (props[propName]) {
-    const regexp = /#[a-z0-9]{7}/;
-    if (props[propName].length !== 7 || regexp.test(props[propName])) return new Error(ERRORS.PROPS.INVALID_COLOR);
+    const regexp = /#[a-zA-Z0-9]{6}/;
+    if (props[propName].length !== 7 || !regexp.test(props[propName])) return new Error(ERRORS.PROPS.INVALID_COLOR);
   }
 };
 const animations = {
@@ -166,7 +177,7 @@ Modal.propTypes = {
   content: PropTypes.oneOfType([PropTypes.element, PropTypes.object, PropTypes.string]),
   footer: PropTypes.oneOfType([PropTypes.element, PropTypes.object, PropTypes.string]),
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.element), PropTypes.object, PropTypes.string]),
-  closeBtn: PropTypes.element,
+  closeBtn: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
   className: PropTypes.string,
   // behavior
   exitExisting: PropTypes.bool,

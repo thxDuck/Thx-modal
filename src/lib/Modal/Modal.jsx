@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import CloseButton from "./CloseButton";
 import useModal from "./Hooks";
@@ -31,6 +32,18 @@ const Modal = (props) => {
 	const [realContent, setContent] = useState(content || "");
 	const { toggleModal } = useModal();
 
+	const portalId = `__thxModals_portal__${id}`;
+	if (!document.getElementById(portalId)) {
+		const portalContainer = document.createElement("div");
+		portalContainer.id = portalId;
+		if (props.backgroundStyle !== false) {
+			portalContainer.style.position = "absolute";
+			portalContainer.style.top = "0";
+			portalContainer.style.left = "0";
+		}
+		document.getElementsByTagName("body")[0].prepend(portalContainer);
+	}
+
 	const { closeBtn, closeText } = props;
 	const exitOnClick = props.exitOnClick && !isDialog;
 	const handleKeyPress = (event) => {
@@ -41,11 +54,11 @@ const Modal = (props) => {
 	};
 
 	useEffect(() => {
+		if (!isOpen) return;
 		const getAsyncContent = async () => {
 			const content = await asyncContent();
 			setContent(content);
 		};
-
 		if (exitExisting && isOpen) {
 			const otherModals = document.querySelectorAll(`.__thxModal__:not(#${id})`);
 			if (otherModals.length) {
@@ -63,12 +76,8 @@ const Modal = (props) => {
 			if (exitOnEscape !== false) window.removeEventListener("keydown", handleKeyPress);
 			if (exitOnClick) window.removeEventListener("click", handleClick);
 		};
-	}, [isOpen, exitOnEscape]);
+	}, [realContent, isOpen, exitOnEscape]);
 
-	if (!children && !header && !content && !footer) {
-		console.error(ERRORS.CONTENT.NO_CONTENT);
-		return false;
-	}
 	// Close
 	const close = () => {
 		const duration = parseInt(animationDuration) || 0;
@@ -77,21 +86,12 @@ const Modal = (props) => {
 			document.getElementById(id).animate(keyFrame, { duration: duration, fill: "both" });
 		}
 		setTimeout(() => {
-			if (!!onClose) onClose();
 			window.removeEventListener("keydown", handleKeyPress);
 			window.removeEventListener("click", handleClick);
-			toggleModal(id);
-
 			onClose(id);
+			toggleModal(id);
 		}, duration);
 	};
-
-	let closeButton = "";
-	if (closeBtn !== false || !!closeText) {
-		if (closeBtn !== undefined)
-			closeButton = <CloseButton close={close}>{closeBtn}</CloseButton>;
-		else closeButton = <CloseButton text={closeText} close={close} />;
-	}
 
 	// Styles
 	let {
@@ -115,6 +115,19 @@ const Modal = (props) => {
 		backgroundStyle,
 		modalSize
 	);
+
+	let closeButton = "";
+	if (closeBtn !== false || !!closeText) {
+		if (closeBtn !== undefined)
+			closeButton = (
+				<CloseButton textColor={modStyle.color} close={close}>
+					{closeBtn}
+				</CloseButton>
+			);
+		else
+			closeButton = <CloseButton textColor={modStyle.color} text={closeText} close={close} />;
+	}
+
 	const { animationOpen } = props;
 	if (!!animationOpen)
 		modStyle.animation = `${animationOpen} ${animationDuration || 500}ms ease-in-out both`;
@@ -148,19 +161,22 @@ const Modal = (props) => {
 	};
 	return (
 		isOpen &&
-		(backgroundStyle === false ? (
-			getModal()
-		) : (
-			<div className="bg-modal" style={bgStyle}>
-				{getModal()}
-			</div>
-		))
+		ReactDOM.createPortal(
+			backgroundStyle === false ? (
+				getModal()
+			) : (
+				<div className="bg-modal" style={bgStyle}>
+					{getModal()}
+				</div>
+			),
+			document.getElementById(portalId)
+		)
 	);
 };
 const colorProp = (props, propName) => {
 	if (props[propName]) {
-		const regexp = /#[a-z0-9]{7}/;
-		if (props[propName].length !== 7 || regexp.test(props[propName]))
+		const regexp = /#[a-zA-Z0-9]{6}/;
+		if (props[propName].length !== 7 || !regexp.test(props[propName]))
 			return new Error(ERRORS.PROPS.INVALID_COLOR);
 	}
 };
@@ -186,7 +202,7 @@ Modal.propTypes = {
 		PropTypes.object,
 		PropTypes.string,
 	]),
-	closeBtn: PropTypes.element,
+	closeBtn: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
 	className: PropTypes.string,
 
 	// behavior

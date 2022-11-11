@@ -2,7 +2,10 @@ import React, { useState } from "react";
 const useModal = () => {
   const [openedModals, setModals] = useState({});
   const toggleModal = id => {
-    setModals({
+    if (openedModals[id] === undefined) setModals({
+      ...openedModals,
+      [id]: true
+    });else setModals({
       ...openedModals,
       [id]: !openedModals[id]
     });

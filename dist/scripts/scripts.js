@@ -5,6 +5,7 @@ export const getAnimationOnClose = animation => {
   return styles.keyFrames[animation];
 };
 export const getHeadContent = (titleText, closeButton) => {
+  if (!titleText && !closeButton) return "";
   const headStyle = {
     display: "flex",
     justifyContent: "space-between",
@@ -21,7 +22,7 @@ export const getHeadContent = (titleText, closeButton) => {
     style: headStyle
   }, title, closeButton);
 };
-export const generateStyles = (theme, textColor, positions, customBackgroundStyle, modalSize) => {
+export const generateStyles = (theme, textColor, modalStyle, customBackgroundStyle, modalSize) => {
   const centerModalWithoutBg = {
     left: 0,
     right: 0,
@@ -44,12 +45,6 @@ export const generateStyles = (theme, textColor, positions, customBackgroundStyl
   }
   const width = getModalSize(modalSize);
   modStyle.width = width;
-  if (!!positions) {
-    for (const cssProp in positions) {
-      const value = positions[cssProp];
-      modStyle[cssProp] = value;
-    }
-  }
   if (!!customBackgroundStyle) {
     for (const cssProp in customBackgroundStyle) {
       const value = customBackgroundStyle[cssProp];
@@ -59,6 +54,12 @@ export const generateStyles = (theme, textColor, positions, customBackgroundStyl
     bgStyle.background = "unset";
     for (const cssProp in centerModalWithoutBg) {
       const value = centerModalWithoutBg[cssProp];
+      modStyle[cssProp] = value;
+    }
+  }
+  if (!!modalStyle) {
+    for (const cssProp in modalStyle) {
+      const value = modalStyle[cssProp];
       modStyle[cssProp] = value;
     }
   }
